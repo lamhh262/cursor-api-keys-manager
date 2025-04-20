@@ -29,7 +29,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, type, monthlyLimit } = body;
+    const { name, monthlyLimit } = body;
 
     if (!name) {
       return NextResponse.json(
@@ -41,7 +41,6 @@ export async function POST(request: Request) {
     const newKey = {
       name,
       key: 'sk-' + Math.random().toString(36).substring(2),
-      type: type || 'development',
       monthly_limit: monthlyLimit || null,
     };
 

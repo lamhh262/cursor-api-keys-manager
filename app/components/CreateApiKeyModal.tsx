@@ -1,5 +1,19 @@
 import { useState } from 'react';
 import { KeyType } from '@/app/types';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { cn } from "@/lib/utils";
 
 interface CreateApiKeyModalProps {
   isOpen: boolean;
@@ -45,117 +59,111 @@ export default function CreateApiKeyModal({ isOpen, onClose, onSubmit, isCreatin
     setIsLimitEnabled(false);
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-xl w-full p-6">
-        <div className="mb-6">
-          <h3 className="text-xl font-semibold">Create a new API key</h3>
-          <p className="text-sm text-gray-500 mt-1">Enter a name and limit for the new API key.</p>
-        </div>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Create a new API key</DialogTitle>
+          <DialogDescription>
+            Enter a name and limit for the new API key.
+          </DialogDescription>
+        </DialogHeader>
 
-        {/* Key Name Input */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Key Name — A unique name to identify this key
-          </label>
-          <input
-            type="text"
-            value={newKeyName}
-            onChange={(e) => setNewKeyName(e.target.value)}
-            placeholder="Key Name"
-            className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
+        <div className="space-y-6 py-4">
+          {/* Key Name Input */}
+          <div className="space-y-2">
+            <Label htmlFor="keyName">
+              Key Name — A unique name to identify this key
+            </Label>
+            <Input
+              id="keyName"
+              value={newKeyName}
+              onChange={(e) => setNewKeyName(e.target.value)}
+              placeholder="Key Name"
+            />
+          </div>
 
-        {/* Key Type Selection */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Key Type — Choose the environment for this key
-          </label>
-          <div className="space-y-3">
-            {keyTypes.map((type) => (
-              <label
-                key={type.id}
-                className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
-                  selectedKeyType === type.id
-                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                    : 'border-gray-200 dark:border-gray-700'
-                } ${type.disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-              >
-                <input
-                  type="radio"
-                  name="keyType"
-                  value={type.id}
-                  checked={selectedKeyType === type.id}
-                  onChange={() => !type.disabled && setSelectedKeyType(type.id)}
-                  disabled={type.disabled}
-                  className="sr-only"
-                />
-                <div className="flex-1">
-                  <div className="flex items-center">
-                    <div className={`w-4 h-4 border-2 rounded-full mr-3 flex items-center justify-center ${
-                      selectedKeyType === type.id
-                        ? 'border-blue-500 bg-blue-500'
-                        : 'border-gray-300 dark:border-gray-600'
-                    }`}>
-                      {selectedKeyType === type.id && (
-                        <div className="w-2 h-2 bg-white rounded-full" />
-                      )}
-                    </div>
+          {/* Key Type Selection */}
+          <div className="space-y-2">
+            <Label>Key Type — Choose the environment for this key</Label>
+            <RadioGroup
+              value={selectedKeyType}
+              onValueChange={(value: string) => setSelectedKeyType(value as 'production' | 'development')}
+              className="space-y-3"
+            >
+              {keyTypes.map((type) => (
+                <div
+                  key={type.id}
+                  className={cn(
+                    "flex items-center p-3 border rounded-lg",
+                    selectedKeyType === type.id
+                      ? "border-primary bg-primary/10"
+                      : "border-input",
+                    type.disabled && "opacity-50 cursor-not-allowed"
+                  )}
+                >
+                  <RadioGroupItem
+                    value={type.id}
+                    id={type.id}
+                    disabled={type.disabled}
+                    className="sr-only"
+                  />
+                  <Label
+                    htmlFor={type.id}
+                    className="flex-1 cursor-pointer"
+                  >
                     <span className="font-medium">{type.name}</span>
-                  </div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 ml-7">
-                    {type.description}
-                  </p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {type.description}
+                    </p>
+                  </Label>
                 </div>
-              </label>
-            ))}
+              ))}
+            </RadioGroup>
+          </div>
+
+          {/* Monthly Limit */}
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="monthlyLimit"
+                checked={isLimitEnabled}
+                onCheckedChange={(checked) => setIsLimitEnabled(checked as boolean)}
+              />
+              <Label htmlFor="monthlyLimit">Limit monthly usage*</Label>
+            </div>
+
+            {isLimitEnabled && (
+              <div className="space-y-2">
+                <Input
+                  type="number"
+                  value={monthlyLimit}
+                  onChange={(e) => setMonthlyLimit(e.target.value)}
+                  className="mt-2"
+                />
+              </div>
+            )}
+            <p className="text-xs text-muted-foreground">
+              *If the combined usage of all your keys exceeds your plan's limit, all requests will be rejected.
+            </p>
           </div>
         </div>
 
-        {/* Monthly Limit */}
-        <div className="mb-6">
-          <label className="flex items-center space-x-2 text-sm mb-2">
-            <input
-              type="checkbox"
-              checked={isLimitEnabled}
-              onChange={(e) => setIsLimitEnabled(e.target.checked)}
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <span className="font-medium text-gray-700 dark:text-gray-300">Limit monthly usage*</span>
-          </label>
-          {isLimitEnabled && (
-            <input
-              type="number"
-              value={monthlyLimit}
-              onChange={(e) => setMonthlyLimit(e.target.value)}
-              className="mt-2 w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          )}
-          <p className="text-xs text-gray-500 mt-2">
-            *If the combined usage of all your keys exceeds your plan's limit, all requests will be rejected.
-          </p>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex justify-end space-x-3">
-          <button
+        <DialogFooter>
+          <Button
+            variant="outline"
             onClick={onClose}
-            className="px-4 py-2 text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100"
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleSubmit}
             disabled={isCreating || !newKeyName.trim()}
-            className="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isCreating ? 'Creating...' : 'Create'}
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -11,9 +11,15 @@ const handler = NextAuth({
   ],
   pages: {
     signIn: "/auth/signin",
+    error: '/auth/error',
   },
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account, profile, email, credentials }) {
+      if (!user?.email) {
+        console.error("No email provided by Google");
+        return false;
+      }
+
       if (account?.provider === "google") {
         try {
           // First check if user exists
@@ -34,8 +40,9 @@ const handler = NextAuth({
               .from("users")
               .insert({
                 email: user.email,
-                name: user.name,
+                name: user.name || user.email.split('@')[0],
                 image: user.image,
+                type: 'development'
               });
 
             if (insertError) {
@@ -51,6 +58,31 @@ const handler = NextAuth({
         }
       }
       return true;
+    },
+    async redirect({ url, baseUrl }) {
+      // Handle case where callback URL is not properly passed
+      if (url === baseUrl && url.includes('callback')) {
+        try {
+          const urlObj = new URL(url);
+          const callbackUrl = urlObj.searchParams.get('callbackUrl');
+          if (callbackUrl) {
+            console.log('Extracted callbackUrl:', callbackUrl);
+            return callbackUrl.startsWith('/') ? `${baseUrl}${callbackUrl}` : callbackUrl;
+          }
+        } catch (error) {
+          console.error('Error parsing URL:', error);
+        }
+      }
+
+      // Allows relative callback URLs
+      if (url.startsWith("/")) {
+        return `${baseUrl}${url}`;
+      }
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) {
+        return url;
+      }
+      return baseUrl;
     },
     async session({ session, token }) {
       return session;

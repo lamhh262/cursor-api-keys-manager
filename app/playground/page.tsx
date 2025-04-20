@@ -3,6 +3,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Toast from '@/app/components/Toast';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function Playground() {
   const [apiKey, setApiKey] = useState('');
@@ -50,36 +54,39 @@ export default function Playground() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-background">
       <div className="max-w-2xl mx-auto px-4 py-16">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h1 className="text-2xl font-semibold mb-6">API Playground</h1>
+        <Card>
+          <CardHeader>
+            <CardTitle>API Playground</CardTitle>
+            <CardDescription>
+              Test your API key to access protected resources
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="apiKey">Enter your API Key</Label>
+                <Input
+                  id="apiKey"
+                  type="text"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  placeholder="sk-..."
+                  required
+                />
+              </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label htmlFor="apiKey" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Enter your API Key
-              </label>
-              <input
-                id="apiKey"
-                type="text"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="sk-..."
-                className="w-full px-4 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={isSubmitting || !apiKey.trim()}
-              className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSubmitting ? 'Validating...' : 'Validate API Key'}
-            </button>
-          </form>
-        </div>
+              <Button
+                type="submit"
+                disabled={isSubmitting || !apiKey.trim()}
+                className="w-full"
+              >
+                {isSubmitting ? 'Validating...' : 'Validate API Key'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
       </div>
 
       <Toast

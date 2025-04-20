@@ -1,4 +1,6 @@
 import { useEffect } from 'react';
+import { Toaster, toast } from 'sonner';
+import { CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
 
 interface ToastProps {
   message: string;
@@ -9,44 +11,46 @@ interface ToastProps {
 
 export default function Toast({ message, isVisible, onClose, type = 'success' }: ToastProps) {
   useEffect(() => {
-    if (isVisible) {
-      const timer = setTimeout(() => {
-        onClose();
-      }, 3000); // Auto hide after 3 seconds
+    let toastId: number | string;
 
-      return () => clearTimeout(timer);
+    if (isVisible && message) {
+      const toastOptions = {
+        duration: 2000,
+        onDismiss: () => {
+          onClose();
+        },
+      };
+
+      switch (type) {
+        case 'success':
+          toastId = toast.success(message, toastOptions);
+          break;
+        case 'error':
+          toastId = toast.error(message, toastOptions);
+          break;
+        case 'warning':
+          toastId = toast.warning(message, toastOptions);
+          break;
+        default:
+          toastId = toast(message, toastOptions);
+      }
     }
-  }, [isVisible, onClose]);
 
-  if (!isVisible) return null;
-
-  const bgColor = {
-    success: 'bg-green-600',
-    error: 'bg-red-600',
-    warning: 'bg-red-500'
-  }[type];
+    return () => {
+      if (toastId) {
+        toast.dismiss(toastId);
+      }
+    };
+  }, [message, type]); // Remove isVisible from dependencies
 
   return (
-    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50">
-      <div className={`${bgColor} text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-3 animate-fade-in`}>
-        {type === 'success' && (
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-        )}
-        {type === 'warning' && (
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-        )}
-        <span>{message}</span>
-        <button onClick={onClose} className="ml-4 hover:text-gray-200">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-    </div>
+    <Toaster
+      position="top-right"
+      richColors
+      closeButton
+      expand={false}
+      theme="light"
+    />
   );
 }
 
