@@ -18,10 +18,10 @@ export function ActionButtons() {
   };
 
   return (
-    <div className="flex flex-col gap-2 min-[400px]:flex-row">
+    <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
       <Button
         size="lg"
-        className="bg-emerald-500 hover:bg-emerald-600"
+        className="bg-emerald-500 hover:bg-emerald-600 w-full sm:w-auto"
         onClick={handleManageApiKeys}
       >
         Get Started for Free <ArrowRight className="ml-2 h-4 w-4" />
@@ -29,6 +29,7 @@ export function ActionButtons() {
       <Button
         size="lg"
         variant="outline"
+        className="w-full sm:w-auto"
         onClick={() => {
           const element = document.getElementById('how-it-works');
           if (element) {

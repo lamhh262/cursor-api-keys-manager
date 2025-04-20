@@ -42,7 +42,7 @@ function AuthButtonContent() {
           variant="ghost"
           size="sm"
           onClick={handleSignOut}
-          className="text-sm font-medium"
+          className="text-sm font-medium w-full sm:w-auto"
         >
           Sign Out
         </Button>
@@ -54,7 +54,7 @@ function AuthButtonContent() {
     <Button
       size="sm"
       onClick={handleSignIn}
-      className="bg-emerald-500 hover:bg-emerald-600"
+      className="bg-emerald-500 hover:bg-emerald-600 w-full sm:w-auto"
     >
       Sign In
     </Button>
