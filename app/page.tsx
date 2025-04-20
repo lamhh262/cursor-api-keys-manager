@@ -282,6 +282,9 @@ export default function Home() {
                 <div className="absolute -top-4 left-0 right-0 mx-auto w-fit rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-white">
                   Popular
                 </div>
+                <div className="absolute top-0 right-0 bg-amber-500 text-white text-xs font-semibold px-3 py-1 rounded-tr-lg rounded-bl-lg">
+                  Coming Soon
+                </div>
                 <div className="space-y-2">
                   <h3 className="text-2xl font-bold">Pro</h3>
                   <p className="text-muted-foreground">For individuals and small teams</p>
@@ -309,14 +312,17 @@ export default function Home() {
                   </li>
                 </ul>
                 <div className="mt-6">
-                  <Link href="/signup">
-                    <Button className="w-full bg-emerald-500 hover:bg-emerald-600">Start 14-Day Trial</Button>
-                  </Link>
+                  <Button className="w-full" variant="outline" disabled>
+                    Coming Soon
+                  </Button>
                 </div>
               </div>
 
               {/* Enterprise Tier */}
-              <div className="flex flex-col rounded-lg border bg-background p-6 shadow-sm">
+              <div className="flex flex-col rounded-lg border bg-background p-6 shadow-sm relative">
+                <div className="absolute top-0 right-0 bg-amber-500 text-white text-xs font-semibold px-3 py-1 rounded-tr-lg rounded-bl-lg">
+                  Coming Soon
+                </div>
                 <div className="space-y-2">
                   <h3 className="text-2xl font-bold">Enterprise</h3>
                   <p className="text-muted-foreground">For organizations and large teams</p>
@@ -348,11 +354,9 @@ export default function Home() {
                   </li>
                 </ul>
                 <div className="mt-6">
-                  <Link href="/contact">
-                    <Button className="w-full" variant="outline">
-                      Contact Sales
-                    </Button>
-                  </Link>
+                  <Button className="w-full" variant="outline" disabled>
+                    Coming Soon
+                  </Button>
                 </div>
               </div>
             </div>
