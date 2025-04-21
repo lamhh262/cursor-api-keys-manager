@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { supabase, ApiKey } from '@/app/lib/supabase';
 import { getUserIdFromEmail } from '@/app/lib/auth';
 import { getServerSession } from 'next-auth';
@@ -7,7 +7,7 @@ import { authOptions } from '@/app/lib/auth';
 // GET a specific API key by ID
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get the session directly from NextAuth
@@ -30,7 +30,7 @@ export async function GET(
       );
     }
 
-    const id = params.id;
+    const { id } = await params;
 
     // Fetch the API key for this user
     const { data, error } = await supabase
@@ -67,8 +67,8 @@ export async function GET(
 
 // PATCH (update) a specific API key by ID
 export async function PATCH(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get the session directly from NextAuth
@@ -91,7 +91,7 @@ export async function PATCH(
       );
     }
 
-    const id = params.id;
+    const { id } = await params;
     const body = await request.json();
     const { name, monthlyLimit } = body;
 
@@ -152,8 +152,8 @@ export async function PATCH(
 
 // DELETE a specific API key by ID
 export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get the session directly from NextAuth
@@ -176,7 +176,7 @@ export async function DELETE(
       );
     }
 
-    const id = params.id;
+    const { id } = await params;
 
     // First check if the API key belongs to the user
     const { data: existingKey, error: fetchError } = await supabase
