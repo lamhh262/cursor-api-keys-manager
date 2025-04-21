@@ -147,13 +147,12 @@ export default function Dashboard() {
     setIsEditing(true);
     setError(null);
     try {
-      const response = await fetch('/api/keys', {
+      const response = await fetch(`/api/keys/${editingKeyId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          id: editingKeyId,
           name: editKeyName,
         }),
       });
@@ -195,7 +194,7 @@ export default function Dashboard() {
 
     setError(null);
     try {
-      const response = await fetch(`/api/keys?id=${id}`, {
+      const response = await fetch(`/api/keys/${id}`, {
         method: 'DELETE',
       });
 

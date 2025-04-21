@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/app/lib/supabase";
 import { summarizeReadme } from "./chain";
+import { checkRateLimit } from "@/app/lib/rate-limit";
 
 export async function POST(request: Request) {
   try {
@@ -22,20 +23,10 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if the API key exists in the database
-    const { data, error } = await supabase
-      .from("api_keys")
-      .select("id, user_id")
-      .eq("key", apiKey)
-      .single();
-
-    if (error || !data) {
-      return NextResponse.json({ error: "Invalid API key" }, { status: 401 });
-    }
-
-    // Check if the API key has a user_id (for backward compatibility)
-    if (!data.user_id) {
-      console.warn('API key found without user_id:', data.id);
+    // Check rate limit
+    const rateLimitResult = await checkRateLimit(apiKey);
+    if (!rateLimitResult.allowed) {
+      return rateLimitResult.error;
     }
 
     const readmeContent = await getGitHubReadme(githubUrl);

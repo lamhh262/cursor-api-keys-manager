@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { supabase, ApiKey } from '@/app/lib/supabase';
 import { getUserIdFromEmail } from '@/app/lib/auth';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/lib/auth';
 
 // GET a specific API key by ID
 export async function GET(
@@ -8,10 +10,10 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Get the user email from the request headers (set by middleware)
-    const userEmail = request.headers.get('x-user-email');
+    // Get the session directly from NextAuth
+    const session = await getServerSession(authOptions);
 
-    if (!userEmail) {
+    if (!session || !session.user || !session.user.email) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -19,7 +21,7 @@ export async function GET(
     }
 
     // Get the user ID from the email
-    const userId = await getUserIdFromEmail(userEmail);
+    const userId = await getUserIdFromEmail(session.user.email);
 
     if (!userId) {
       return NextResponse.json(
@@ -69,10 +71,10 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Get the user email from the request headers (set by middleware)
-    const userEmail = request.headers.get('x-user-email');
+    // Get the session directly from NextAuth
+    const session = await getServerSession(authOptions);
 
-    if (!userEmail) {
+    if (!session || !session.user || !session.user.email) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -80,7 +82,7 @@ export async function PATCH(
     }
 
     // Get the user ID from the email
-    const userId = await getUserIdFromEmail(userEmail);
+    const userId = await getUserIdFromEmail(session.user.email);
 
     if (!userId) {
       return NextResponse.json(
@@ -154,10 +156,10 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Get the user email from the request headers (set by middleware)
-    const userEmail = request.headers.get('x-user-email');
+    // Get the session directly from NextAuth
+    const session = await getServerSession(authOptions);
 
-    if (!userEmail) {
+    if (!session || !session.user || !session.user.email) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -165,7 +167,7 @@ export async function DELETE(
     }
 
     // Get the user ID from the email
-    const userId = await getUserIdFromEmail(userEmail);
+    const userId = await getUserIdFromEmail(session.user.email);
 
     if (!userId) {
       return NextResponse.json(

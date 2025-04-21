@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS api_keys (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name TEXT NOT NULL,
   key TEXT NOT NULL UNIQUE,
-  monthly_limit INTEGER,
+  monthly_limit INTEGER DEFAULT 1000,
   usage INTEGER DEFAULT 0,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
