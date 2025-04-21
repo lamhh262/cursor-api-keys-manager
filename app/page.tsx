@@ -10,6 +10,7 @@ import { AuthButton } from "./components/AuthButton"
 import { ActionButtons } from "./components/ActionButtons"
 import { Footer } from "./components/Footer"
 import { useState } from "react"
+import { ApiDemo } from "./components/ApiDemo";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -27,7 +28,7 @@ export default function Home() {
   return (
     <div className="flex min-h-screen flex-col items-center">
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4">
+        <div className="mx-auto px-4">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center gap-2">
               <Github className="h-6 w-6 text-emerald-500" />
@@ -108,7 +109,7 @@ export default function Home() {
       <main className="flex-1 w-full">
         {/* Hero Section */}
         <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
-          <div className="container mx-auto px-4">
+          <div className="mx-auto px-4">
             <div className="flex flex-col items-center justify-center text-center">
               <div className="space-y-4">
                 <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
@@ -197,7 +198,7 @@ export default function Home() {
 
         {/* How It Works */}
         <section id="how-it-works" className="w-full py-12 md:py-24">
-          <div className="container mx-auto px-4">
+          <div className="mx-auto px-4">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold tracking-tighter md:text-4xl">How It Works</h2>
@@ -234,9 +235,26 @@ export default function Home() {
           </div>
         </section>
 
+        {/* API Demo Section - Add this before the Pricing section */}
+        <section className="w-full py-12 md:py-24">
+          <div className="px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center mb-10">
+              <div className="space-y-2">
+                <h2 className="text-3xl font-bold tracking-tighter md:text-4xl">Try It Yourself</h2>
+                <p className="max-w-[700px] text-muted-foreground md:text-xl">
+                  See how GitHub Analyzer works by analyzing any repository
+                </p>
+              </div>
+            </div>
+            <div className="mx-auto max-w-5xl">
+              <ApiDemo />
+            </div>
+          </div>
+        </section>
+
         {/* Pricing Section */}
         <section id="pricing" className="w-full py-12 md:py-24 bg-muted/50">
-          <div className="container mx-auto px-4">
+          <div className="mx-auto px-4">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold tracking-tighter md:text-4xl">Simple, Transparent Pricing</h2>
@@ -365,7 +383,7 @@ export default function Home() {
 
         {/* CTA Section */}
         <section className="w-full py-12 md:py-24">
-          <div className="container mx-auto px-4">
+          <div className="mx-auto px-4">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold tracking-tighter md:text-4xl">Ready to Get Started?</h2>
