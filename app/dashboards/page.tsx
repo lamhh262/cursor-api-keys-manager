@@ -294,7 +294,7 @@ export default function Dashboard() {
         <main className="p-8">
           <div className="mb-6 flex justify-between items-center">
             <h2 className="text-xl font-semibold">API Keys</h2>
-            <Button onClick={() => setShowCreateModal(true)} className="gap-2">
+            <Button onClick={() => setShowCreateModal(true)} className="gap-2 bg-emerald-500 hover:bg-emerald-600">
               + Create New Key
             </Button>
           </div>
@@ -394,6 +394,7 @@ export default function Dashboard() {
             <Button
               onClick={handleCreateKey}
               disabled={isCreating || !newKeyName.trim()}
+              className="bg-emerald-500 hover:bg-emerald-600"
             >
               {isCreating ? 'Creating...' : 'Create Key'}
             </Button>
@@ -430,6 +431,7 @@ export default function Dashboard() {
             <Button
               onClick={handleEditKey}
               disabled={isEditing || !editKeyName.trim()}
+              className="bg-emerald-500 hover:bg-emerald-600"
             >
               {isEditing ? 'Saving...' : 'Save Changes'}
             </Button>

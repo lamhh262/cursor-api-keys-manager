@@ -3,8 +3,7 @@ import { supabase } from '@/app/lib/supabase';
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { apiKey } = body;
+    const apiKey = request.headers.get('x-api-key');
 
     if (!apiKey) {
       return NextResponse.json(
