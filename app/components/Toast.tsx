@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
-import { Toaster, toast } from 'sonner';
-import { CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface ToastProps {
   message: string;
@@ -41,17 +40,9 @@ export default function Toast({ message, isVisible, onClose, type = 'success' }:
         toast.dismiss(toastId);
       }
     };
-  }, [message, type]); // Remove isVisible from dependencies
+  }, [message, type, isVisible, onClose]);
 
-  return (
-    <Toaster
-      position="top-right"
-      richColors
-      closeButton
-      expand={false}
-      theme="light"
-    />
-  );
+  return null;
 }
 
 // Add fade-in animation to tailwind config

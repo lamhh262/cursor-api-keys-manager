@@ -3,6 +3,8 @@ import "./globals.css"
 import { Inter } from 'next/font/google'
 import { ThemeProvider } from "@/components/theme-provider"
 import { Providers } from "./providers"
+import { Toaster } from 'sonner'
+import { cn } from '@/lib/utils'
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -18,7 +20,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={cn("min-h-screen bg-background font-sans antialiased", inter.className)}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -28,6 +30,13 @@ export default function RootLayout({
           <Providers>
             {children}
           </Providers>
+          <Toaster
+            position="top-right"
+            richColors
+            closeButton
+            expand={false}
+            theme="light"
+          />
         </ThemeProvider>
       </body>
     </html>

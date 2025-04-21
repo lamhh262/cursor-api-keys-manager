@@ -5,10 +5,19 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Loader2, ExternalLink } from "lucide-react"
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
 
 interface ApiResponse {
   cool_facts: string[]
   summary: string
+  stars: number
+  latestVersion: string
+  website: string
+  license: {
+    name: string
+    url: string
+  }
 }
 
 export function ApiDemo() {
@@ -23,52 +32,37 @@ export function ApiDemo() {
       "The architecture utilizes 'planner' and 'execution' agents for generating research questions and gathering information, respectively.",
       "It supports deep research with a tree-like exploration pattern, diving deeper into subtopics while maintaining a comprehensive view.",
       "The project offers both lightweight and production-ready frontend versions.",
-      "It supports research on local documents in various formats like PDF, TXT, CSV, Excel, Markdown, PPTX, and DOCX.",
-      "It features a multi-agent assistant built with LangGraph for improved research depth and quality.",
-      "The project actively encourages contributions and has a roadmap available on Trello.",
+      "It supports research on local documents in various formats like PDF, Word, and Markdown.",
+      "The project features a multi-agent assistant built with LangGraph for improved research depth and quality.",
+      "The tool scrapes many opinions and will evenly explain diverse views that a biased person would never have read."
     ],
-    summary:
-      "GPT Researcher is an open-source AI agent designed to automate and enhance research processes. It leverages a planner-executor architecture to generate detailed, unbiased reports from web and local sources. The tool offers features like deep research, multi-agent assistance, and customizable frontends, aiming to provide accurate and comprehensive information efficiently.",
+    summary: "GPT Researcher is an open-source AI agent designed for in-depth research, capable of generating detailed, unbiased reports from both web and local sources. It employs a planner-executor architecture, supports deep recursive research, and offers customizable frontends. The project also includes a multi-agent assistant for enhanced research capabilities and emphasizes reducing misinformation through comprehensive data aggregation.",
+    stars: 21037,
+    latestVersion: "v3.2.7",
+    website: "https://gptr.dev",
+    license: {
+        name: "Apache License 2.0",
+        url: "https://api.github.com/licenses/apache-2.0"
+    }
   })
   const [error, setError] = useState<string | null>(null)
+  const { data: session } = useSession()
+  const router = useRouter()
 
   const handleSubmit = async () => {
     setLoading(true)
     setError(null)
 
     try {
-      // In a real implementation, this would make an actual API call
-      // For demo purposes, we'll simulate a response after a delay
-      const payload = JSON.parse(requestPayload)
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-
-      // Check if the URL is valid
-      if (!payload.githubUrl || !payload.githubUrl.includes("github.com/")) {
-        throw new Error("Please enter a valid GitHub repository URL")
+      // Check authentication status
+      if (!session) {
+        // If not authenticated, redirect to login
+        router.push('/auth/signin?callbackUrl=/playground')
+        return
       }
 
-      // Extract repo name for a more personalized response
-      const repoPath = payload.githubUrl.split("github.com/")[1]
-      const [owner, repo] = repoPath.split("/")
-
-      // Generate a simulated response based on the repo
-      const simulatedResponse: ApiResponse = {
-        cool_facts: [
-          `${repo} is an open-source project maintained by ${owner}.`,
-          `This repository contains code for ${repo}, which appears to be a software project.`,
-          `The project structure follows modern development practices.`,
-          `It has documentation that explains its features and usage.`,
-          `The codebase is well-organized and follows best practices.`,
-          `It supports multiple platforms and environments.`,
-          `The project has an active community of contributors.`,
-          `Regular updates and maintenance keep the project current with industry standards.`,
-        ],
-        summary: `${repo} is an open-source project developed by ${owner} that provides a comprehensive solution for its target use case. The repository contains well-structured code, documentation, and examples that demonstrate its capabilities. The project is actively maintained and welcomes contributions from the community.`,
-      }
-
-      setResponse(simulatedResponse)
+      // If authenticated, redirect to playground
+      router.push('/playground')
     } catch (err) {
       setError(err instanceof Error ? err.message : "An unexpected error occurred")
     } finally {
@@ -104,7 +98,7 @@ export function ApiDemo() {
           <div className="mt-4 flex justify-end">
             <Button onClick={handleSubmit} disabled={loading} className="bg-emerald-500 hover:bg-emerald-600">
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {loading ? "Sending..." : "Send Request"}
+              {loading ? "Loading..." : "Try It Out"}
             </Button>
           </div>
           {error && <div className="mt-2 text-sm text-red-500">{error}</div>}
@@ -135,6 +129,14 @@ export function ApiDemo() {
                 <div>
                   <h3 className="text-sm font-semibold mb-2">Summary:</h3>
                   <p className="text-sm">{response.summary}</p>
+                </div>
+                <div className="mt-4">
+                  <h3 className="text-sm font-semibold mb-2">Stars:</h3>
+                  <p className="text-sm">{response.stars}</p>
+                </div>
+                <div className="mt-4">
+                  <h3 className="text-sm font-semibold mb-2">Latest Version:</h3>
+                  <p className="text-sm">{response.latestVersion}</p>
                 </div>
               </div>
             </TabsContent>

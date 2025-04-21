@@ -7,6 +7,7 @@ import { Home, Terminal, FileText, Book, Github, Loader2, Menu, X } from 'lucide
 import { useSession, signOut } from "next-auth/react";
 import { useState, useEffect } from 'react';
 import Toast from '@/app/components/Toast';
+import { ThemeToggle } from "@/components/theme-toggle";
 
 interface SidebarItem {
   name: string;
@@ -175,21 +176,24 @@ export default function Sidebar() {
               </div>
             </div>
           </Button>
-          <Button
-            variant="ghost"
-            className="w-full mt-2 text-destructive hover:text-destructive hover:bg-destructive/10"
-            onClick={handleLogout}
-            disabled={isLoggingOut}
-          >
-            {isLoggingOut ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Signing out...
-              </>
-            ) : (
-              'Logout'
-            )}
-          </Button>
+          <div className="flex items-center gap-2 mt-2">
+            <ThemeToggle />
+            <Button
+              variant="ghost"
+              className="flex-1 text-destructive hover:text-destructive hover:bg-destructive/10"
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+            >
+              {isLoggingOut ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Signing out...
+                </>
+              ) : (
+                'Logout'
+              )}
+            </Button>
+          </div>
         </div>
       </div>
 

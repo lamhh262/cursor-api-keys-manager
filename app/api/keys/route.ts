@@ -37,8 +37,6 @@ export async function GET(request: Request) {
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
-    console.log('Supabase query result:', { data, error });
-
     if (error) {
       console.error('Error fetching API keys:', error);
       return NextResponse.json(

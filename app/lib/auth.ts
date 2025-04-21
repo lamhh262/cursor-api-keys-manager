@@ -27,8 +27,6 @@ export async function getUserIdFromEmail(email: string): Promise<string | null> 
       .eq('email', email)
       .single();
 
-    console.log('Supabase query result:', { data, error });
-
     if (error) {
       console.error('Error getting user ID:', error);
       return null;
