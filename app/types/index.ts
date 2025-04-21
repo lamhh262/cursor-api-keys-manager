@@ -6,6 +6,7 @@ export interface ApiKey {
   type?: string;
   monthly_limit?: number;
   usage?: number;
+  user_id?: string;
 }
 
 export interface KeyType {

@@ -16,7 +16,7 @@ export async function POST(request: Request) {
     // Check if the API key exists in the database
     const { data, error } = await supabase
       .from('api_keys')
-      .select('id')
+      .select('id, user_id')
       .eq('key', apiKey)
       .single();
 
@@ -25,6 +25,11 @@ export async function POST(request: Request) {
         { error: 'Invalid API key' },
         { status: 401 }
       );
+    }
+
+    // Check if the API key has a user_id (for backward compatibility)
+    if (!data.user_id) {
+      console.warn('API key found without user_id:', data.id);
     }
 
     return NextResponse.json({ success: true });

@@ -1,17 +1,17 @@
 import { NextResponse } from 'next/server';
 import { supabase, ApiKey } from '@/app/lib/supabase';
 import { getUserIdFromEmail } from '@/app/lib/auth';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/lib/auth';
 
-export async function GET(request: Request) {
+// GET a specific API key by ID
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
-    // Get the session directly from NextAuth
-    const session = await getServerSession(authOptions);
-    console.log('NextAuth session:', session);
+    // Get the user email from the request headers (set by middleware)
+    const userEmail = request.headers.get('x-user-email');
 
-    if (!session || !session.user || !session.user.email) {
-      console.log('No session or user email found');
+    if (!userEmail) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -19,94 +19,37 @@ export async function GET(request: Request) {
     }
 
     // Get the user ID from the email
-    const userId = await getUserIdFromEmail(session.user.email);
-    console.log('User ID from email:', userId);
+    const userId = await getUserIdFromEmail(userEmail);
 
     if (!userId) {
-      console.log('No user ID found for email:', session.user.email);
       return NextResponse.json(
         { error: 'User not found' },
         { status: 404 }
       );
     }
 
-    // Fetch API keys directly using the user ID
+    const id = params.id;
+
+    // Fetch the API key for this user
     const { data, error } = await supabase
       .from('api_keys')
       .select('*')
+      .eq('id', id)
       .eq('user_id', userId)
-      .order('created_at', { ascending: false });
-
-    console.log('Supabase query result:', { data, error });
-
-    if (error) {
-      console.error('Error fetching API keys:', error);
-      return NextResponse.json(
-        { error: 'Failed to fetch API keys', details: error.message },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json(data);
-  } catch (error) {
-    console.error('Unexpected error:', error);
-    return NextResponse.json(
-      { error: 'An unexpected error occurred', details: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
-    );
-  }
-}
-
-export async function POST(request: Request) {
-  try {
-    // Get the session directly from NextAuth
-    const session = await getServerSession(authOptions);
-
-    if (!session || !session.user || !session.user.email) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    // Get the user ID from the email
-    const userId = await getUserIdFromEmail(session.user.email);
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
-    }
-
-    const body = await request.json();
-    const { name, monthlyLimit } = body;
-
-    if (!name) {
-      return NextResponse.json(
-        { error: 'Name is required' },
-        { status: 400 }
-      );
-    }
-
-    const newKey = {
-      name,
-      key: 'sk-' + Math.random().toString(36).substring(2),
-      monthly_limit: monthlyLimit || null,
-      user_id: userId,
-    };
-
-    const { data, error } = await supabase
-      .from('api_keys')
-      .insert(newKey)
-      .select()
       .single();
 
     if (error) {
-      console.error('Error creating API key:', error);
+      console.error('Error fetching API key:', error);
       return NextResponse.json(
-        { error: 'Failed to create API key' },
+        { error: 'Failed to fetch API key' },
         { status: 500 }
+      );
+    }
+
+    if (!data) {
+      return NextResponse.json(
+        { error: 'API key not found or unauthorized' },
+        { status: 404 }
       );
     }
 
@@ -120,12 +63,16 @@ export async function POST(request: Request) {
   }
 }
 
-export async function PATCH(request: Request) {
+// PATCH (update) a specific API key by ID
+export async function PATCH(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
-    // Get the session directly from NextAuth
-    const session = await getServerSession(authOptions);
+    // Get the user email from the request headers (set by middleware)
+    const userEmail = request.headers.get('x-user-email');
 
-    if (!session || !session.user || !session.user.email) {
+    if (!userEmail) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -133,7 +80,7 @@ export async function PATCH(request: Request) {
     }
 
     // Get the user ID from the email
-    const userId = await getUserIdFromEmail(session.user.email);
+    const userId = await getUserIdFromEmail(userEmail);
 
     if (!userId) {
       return NextResponse.json(
@@ -142,15 +89,9 @@ export async function PATCH(request: Request) {
       );
     }
 
+    const id = params.id;
     const body = await request.json();
-    const { id, name } = body;
-
-    if (!id) {
-      return NextResponse.json(
-        { error: 'ID is required' },
-        { status: 400 }
-      );
-    }
+    const { name, monthlyLimit } = body;
 
     if (!name) {
       return NextResponse.json(
@@ -175,11 +116,17 @@ export async function PATCH(request: Request) {
     }
 
     // Update the API key
+    const updateData: Partial<ApiKey> = { name };
+
+    if (monthlyLimit !== undefined) {
+      updateData.monthly_limit = monthlyLimit;
+    }
+
     const { data, error } = await supabase
       .from('api_keys')
-      .update({ name })
+      .update(updateData)
       .eq('id', id)
-      .eq('user_id', userId) // Ensure the key belongs to the user
+      .eq('user_id', userId)
       .select()
       .single();
 
@@ -201,12 +148,16 @@ export async function PATCH(request: Request) {
   }
 }
 
-export async function DELETE(request: Request) {
+// DELETE a specific API key by ID
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
-    // Get the session directly from NextAuth
-    const session = await getServerSession(authOptions);
+    // Get the user email from the request headers (set by middleware)
+    const userEmail = request.headers.get('x-user-email');
 
-    if (!session || !session.user || !session.user.email) {
+    if (!userEmail) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -214,7 +165,7 @@ export async function DELETE(request: Request) {
     }
 
     // Get the user ID from the email
-    const userId = await getUserIdFromEmail(session.user.email);
+    const userId = await getUserIdFromEmail(userEmail);
 
     if (!userId) {
       return NextResponse.json(
@@ -223,15 +174,7 @@ export async function DELETE(request: Request) {
       );
     }
 
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
-
-    if (!id) {
-      return NextResponse.json(
-        { error: 'ID is required' },
-        { status: 400 }
-      );
-    }
+    const id = params.id;
 
     // First check if the API key belongs to the user
     const { data: existingKey, error: fetchError } = await supabase
@@ -253,7 +196,7 @@ export async function DELETE(request: Request) {
       .from('api_keys')
       .delete()
       .eq('id', id)
-      .eq('user_id', userId); // Ensure the key belongs to the user
+      .eq('user_id', userId);
 
     if (error) {
       console.error('Error deleting API key:', error);

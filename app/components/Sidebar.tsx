@@ -55,11 +55,6 @@ export default function Sidebar() {
       icon: <Terminal className="w-5 h-5" />,
     },
     {
-      name: 'Invoices',
-      path: '/invoices',
-      icon: <FileText className="w-5 h-5" />,
-    },
-    {
       name: 'Documentation',
       path: '/docs',
       icon: <Book className="w-5 h-5" />,
